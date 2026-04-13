@@ -534,28 +534,14 @@ window.addEventListener('load', function() {
     renderLoginScreen();
   }
 
-  function switchTab(tab) {
-    // Плавное переключение с анимацией
-
-    const appScreen = document.getElementById("app-screen");
-
-    if (appScreen) {
-
-        appScreen.style.opacity = "0";
-
-        setTimeout(() => {
-
-            renderCurrentTab();
-
-            appScreen.style.transition = "opacity 0.2s ease";
-
-            appScreen.style.opacity = "1";
-
-        }, 150);
-
-        return;
-
-    }
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll(".tab").forEach((el, i) => {
+        if (i === tab) el.classList.add("active");
+        else el.classList.remove("active");
+    });
+    renderCurrentTab();
+}
 
 
     currentTab = tab;
