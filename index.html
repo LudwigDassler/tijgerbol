@@ -42,6 +42,8 @@
     .avatar-selector { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0; }
     .avatar-option { width: 48px; height: 48px; background: #F5F5F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; border: 2px solid transparent; }
     .avatar-option.selected { border-color: #B8860B; background: #FFF8F0; transform: scale(1.05); }
+    .avatar-option i { font-size: 24px; }
+    .avatar-option.selected i { color: white; }
     .stat-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
     .hidden { display: none; }
     .text-center { text-align: center; }
@@ -57,9 +59,9 @@
 <body>
 <div class="overlay">
   <div class="tabs" id="tabs" style="display: none;">
-    <div class="tab active" onclick="switchTab(0)"><i class="fas fa-coffee"></i> Кофе</div>
-    <div class="tab" onclick="switchTab(1)"><i class="fas fa-user"></i> Профиль</div>
-    <div class="tab" onclick="switchTab(2)"><i class="fas fa-clock"></i> История</div>
+    <div class="tab active" onclick="switchTab(0)"><i class="fas fa-mug-hot"></i> Кофе</div>
+    <div class="tab" onclick="switchTab(1)"><i class="fas fa-user-circle"></i> Профиль</div>
+    <div class="tab" onclick="switchTab(2)"><i class="fas fa-clock-rotate-left"></i> История</div>
   </div>
   <div id="login-screen" class="container"></div>
   <div id="app-screen" class="hidden"></div>
@@ -74,7 +76,7 @@
   let currentBonus = 0;
   let currentSpent = 0;
   let currentNickname = '';
-  let currentAvatar = '☕';
+  let currentAvatar = "fa-user";
   let currentPhoto = null;
   let transactions = [];
   let currentTab = 0;
@@ -167,7 +169,7 @@
     let isDrink = (category === 'coffee' || category === 'bakery');
     let bonusEarned = isDrink ? Math.floor(amount * 0.05) : 0;
     let categoryName = category === 'coffee' ? 'Кофе' : category === 'bakery' ? 'Фирменный напиток' : 'Другое';
-    let icon = category === 'coffee' ? '☕' : category === 'bakery' ? '🥐' : '🍽️';
+    let icon = category === 'coffee' ? '<i class="fas fa-mug-hot"></i>' : category === 'bakery' ? '🥐' : '🍽️';
     
     currentBonus += bonusEarned;
     currentSpent += amount;
@@ -209,7 +211,7 @@
       currentBonus = userData.bonus;
       currentSpent = userData.spent;
       currentNickname = userData.nickname || userData.name;
-      currentAvatar = userData.avatar || '☕';
+      currentAvatar = userData.avatar || '<i class="fas fa-mug-hot"></i>';
       currentPhoto = userData.photo || null;
       let cloudTransactions = await loadTransactionsFromCloud(phone);
       transactions = cloudTransactions.map(t => ({ description: t.description, amount: t.amount, type: t.type, created_at: t.created_at }));
@@ -218,10 +220,10 @@
       currentBonus = 50;
       currentSpent = 0;
       currentNickname = 'Гость';
-      currentAvatar = '☕';
+      currentAvatar = '<i class="fas fa-mug-hot"></i>';
       currentPhoto = null;
       transactions = [];
-      await saveUserToCloud({ phone: phone, name: 'Новый гость', bonus: 50, spent: 0, nickname: 'Гость', avatar: '☕', photo: null });
+      await saveUserToCloud({ phone: phone, name: 'Новый гость', bonus: 50, spent: 0, nickname: 'Гость', avatar: '<i class="fas fa-mug-hot"></i>', photo: null });
     }
     
     document.getElementById('login-screen').classList.add('hidden');
@@ -267,7 +269,7 @@
         </div>
         <p class="text-muted mb-2">Бонусы начисляются только на кофе и фирменные напитки</p>
         <div class="row">
-          <button class="btn-outline" onclick="showAmountPicker('coffee')"><i class="fas fa-coffee"></i> Кофе</button>
+          <button class="btn-outline" onclick="showAmountPicker('coffee')"><i class="fas fa-mug-hot"></i> Кофе</button>
           <button class="btn-outline" onclick="showAmountPicker('bakery')"><i class="fas fa-croissant"></i> Фирменный</button>
           <button class="btn-outline" onclick="showAmountPicker('other')"><i class="fas fa-utensils"></i> Другое</button>
         </div>
@@ -285,7 +287,7 @@
 
   function showAmountPicker(category) {
     let categoryName = category === 'coffee' ? 'Кофе' : category === 'bakery' ? 'Фирменный напиток' : 'Другое';
-    let icon = category === 'coffee' ? '☕' : category === 'bakery' ? '🥐' : '🍽️';
+    let icon = category === 'coffee' ? '<i class="fas fa-mug-hot"></i>' : category === 'bakery' ? '🥐' : '🍽️';
     let amounts = [200, 500, 1000, 1500];
     let buttons = amounts.map(a => `<button class="btn-outline" onclick="addPurchase(${a}, '${category}')">${a}₽</button>`).join('');
     let html = `
@@ -317,12 +319,12 @@
   }
 
   function renderProfileTab() {
-    let avatars = ['☕', '👤', '🌟', '⭐', '🔥', '💪', '🎯', '🏆', '👑', '🦁', '🐯', '🐼', '🍕', '🎸', '⚡', '💎'];
+    let avatars = ['<i class="fas fa-mug-hot"></i>', '👤', '🌟', '⭐', '🔥', '💪', '🎯', '🏆', '👑', '🦁', '🐯', '🐼', '🍕', '🎸', '⚡', '💎'];
     let avatarsHtml = avatars.map(a => `<div class="avatar-option ${currentAvatar === a ? 'selected' : ''}" onclick="selectAvatar('${a}')">${a}</div>`).join('');
     
     let avatarHtml = currentPhoto 
       ? `<img src="${currentPhoto}" alt="Фото">` 
-      : `<span style="font-size:44px;">${currentAvatar}</span>`;
+      : `<i class="fas ${currentAvatar}" style="font-size:44px;"></i>`;
     
     let html = `
       <div class="container">
@@ -330,7 +332,7 @@
           <div class="avatar-section">
             <div class="avatar-large">${avatarHtml}</div>
             <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
-            <button class="upload-photo-btn" onclick="document.getElementById('photo-upload').click()" style="background:#F0F0F0; color:#1A1A1A;"><i class="fas fa-camera"></i> Загрузить фото</button>
+            <button class="upload-photo-btn" onclick="document.getElementById('photo-upload').click()" style="background:#F0F0F0; color:#1A1A1A;"><i class="fas fa-image"></i> Загрузить фото</button>
           </div>
           <div class="text-center">
             <h2>${currentNickname}</h2>
@@ -359,9 +361,9 @@
         </div>
         <div class="card">
           <h3 style="margin-bottom:16px;">Статистика</h3>
-          <div class="stat-row"><span><i class="fas fa-gem"></i> Всего бонусов</span><strong>${currentBonus}</strong></div>
+          <div class="stat-row"><span><i class="fas fa-coins"></i> Всего бонусов</span><strong>${currentBonus}</strong></div>
           <div class="stat-row"><span><i class="fas fa-shopping-bag"></i> Всего потрачено</span><strong>${currentSpent}₽</strong></div>
-          <div class="stat-row"><span><i class="fas fa-chart-line"></i> Уровень</span><strong>${getLevel()}</strong></div>
+          <div class="stat-row"><span><i class="fas fa-chart-simple"></i> Уровень</span><strong>${getLevel()}</strong></div>
         </div>
         <div class="card text-center">
           <h3 style="margin-bottom:12px;">Мы в соцсетях</h3>
@@ -410,7 +412,7 @@
     let countryOptions = Object.entries(countryCodes).map(([name, code]) => `<option value="${code}">${name} (${code})</option>`).join('');
     let loginHtml = `
       <div class="card" style="text-align:center; margin-top:40px;">
-        <div style="font-size:56px; margin-bottom:8px;">☕</div>
+        <div style="font-size:56px; margin-bottom:8px;"><i class="fas fa-mug-hot"></i></div>
         <h1 style="font-size:32px; letter-spacing:-1px;">Tijgerbol</h1>
         <p class="text-muted" style="margin-bottom:24px;">Бонусная программа кофейни</p>
         <div class="phone-input-group">
@@ -419,10 +421,10 @@
           </select>
           <input type="tel" id="phone-number" class="phone-number" placeholder="912 345 67 89">
         </div>
-        <button onclick="login()" style="margin-top:16px;"><i class="fas fa-arrow-right"></i> Войти / Зарегистрироваться</button>
+        <button onclick="login()" style="margin-top:16px;"><i class="fas fa-sign-in-alt"></i> Войти / Зарегистрироваться</button>
         <p class="text-muted" style="margin-top:20px; font-size:12px;">
           🧪 Тестовые: +79123456789 (450 бонусов)<br>
-          ☕ Бонусы только на кофе и фирменные напитки
+          <i class="fas fa-mug-hot"></i> Бонусы только на кофе и фирменные напитки
         </p>
       </div>
     `;
